@@ -3,8 +3,8 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- * @author Wqarks
- * @version 1.0
+ * @author Wquarks
+ * @version 2.0
  */
 
 public class Main {
