@@ -13,11 +13,10 @@ public class Main {
 		// TODO Auto-generated method stub
 		//*/
 		String[] liste = {"un","une","petit pois","girafe","exemple","fillettes","Général","époque",
-				"longtemps","longitudinal","aimé","kangourou","homme","maintenant","Jade","information",
-				"femmes","prudemment","ouest",
-				"tchèque","case","sinueuse","huitième","neuf","budget","cailloux","dictionnaire",
-				"docteur","creuse","parterre","ambiguité","désengorger","yack","deuxième",
-				"bureautique","cimtière","lime","millier","ville","abeilles","tranquillement"};
+				"longtemps","longitudinal","aimé","kangourou","homme","maintenant","information",
+				"femmes","prudemment","ouest","tchèque","case","sinueuse","huitième","neuf",
+				"budget","cailloux","dictionnaire","budget","cailloux","dictionnaire",
+				"docteur","creuse","parterre","ambiguité",,"ville","abeilles","tranquillement"};
  
 
 
