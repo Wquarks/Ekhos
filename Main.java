@@ -27,7 +27,7 @@ public class Main {
 		}
 	/*	// to read a liste...
 		@SuppressWarnings("resource")
-		BufferedReader reader = new BufferedReader(new FileReader("./bin/liste_22740_mots_Fr"));
+		BufferedReader reader = new BufferedReader(new FileReader("listeName"));
 		String currentLine;
 		while ((currentLine = reader.readLine()) != null) {
 
