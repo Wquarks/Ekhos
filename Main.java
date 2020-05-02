@@ -26,7 +26,7 @@ public class Main {
 			string2API(i);
 			System.out.println();
 		}
-		// */
+	/*	// to read a liste...
 		@SuppressWarnings("resource")
 		BufferedReader reader = new BufferedReader(new FileReader("./bin/liste_22740_mots_Fr"));
 		String currentLine;
@@ -36,7 +36,7 @@ public class Main {
 			string2API(currentLine);
 			System.out.println();
 		}
-		// */
+	 */
 	}
 
 
