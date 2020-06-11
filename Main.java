@@ -4,7 +4,7 @@ import java.io.IOException;
 
 /**
  * @author Wquarks
- * @version 2.0
+ * @version 3.0
  */
 
 public class Main {
@@ -14,9 +14,10 @@ public class Main {
 		//*/
 		String[] liste = {"un","une","petit pois","girafe","exemple","fillettes","Général","époque",
 				"longtemps","longitudinal","aimé","kangourou","homme","maintenant","information",
-				"femmes","prudemment","ouest","tchèque","case","sinueuse","huitième","neuf",
-				"budget","cailloux","dictionnaire","budget","cailloux","dictionnaire",
-				"docteur","creuse","parterre","ambiguité",,"ville","abeilles","tranquillement"};
+				"femmes","prudemment","ouest",
+				"tchèque","case","sinueuse","huitième","neuf","budget","cailloux","dictionnaire",
+				"docteur","creuse","parterre","ambiguité","désengorger","yack","deuxième",
+				"bureautique","cimtière","lime","millier","ville","abeilles","tranquillement"};
  
 
 
@@ -25,17 +26,16 @@ public class Main {
 			string2API(i);
 			System.out.println();
 		}
-	/*	// to read a liste...
+		
 		@SuppressWarnings("resource")
-		BufferedReader reader = new BufferedReader(new FileReader("listeName"));
-		String currentLine;
-		while ((currentLine = reader.readLine()) != null) {
-
-			System.out.print(currentLine+" : ");
-			string2API(currentLine);
+		BufferedReader reader = new BufferedReader(new FileReader(listname));
+		String s;
+		while( (s = reader.readLine()) != null) {
+			String str = new String(s.getBytes(),"UTF-8");
+			System.out.print(str+" : ");
+			string2API(str);
 			System.out.println();
 		}
-	 */
 	}
 
 
@@ -103,7 +103,7 @@ public class Main {
 				}
 				break;
 
-			case 'i':case 'y':
+			case 'i': case 'y': case'ï' :
 				phon="i";
 
 				if (i+1<charArray.length) {
@@ -206,7 +206,18 @@ public class Main {
 						phon="ɔn";
 						i++;
 						break;
+					case "one":
+						if (i+2 ==charArray.length) {
+							phon="ɔn";
+							i++;
+							break;
+						}else if (charArray[charArray.length-1]=='s') {
+							phon="ɔn";
+							i++;
+							break;
+						}
 					}
+					
 
 				}
 				if (i+2<charArray.length) {
