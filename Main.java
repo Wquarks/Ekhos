@@ -1,50 +1,124 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * @author Wquarks
- * @version 3.0
+ * @version 4.0
  */
 
 public class Main {
 
+	private static ArrayList<String[]> arrayListMot = new ArrayList<String[]>();
+
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
-		//*/
-		String[] liste = {"un","une","petit pois","girafe","exemple","fillettes","Général","époque",
-				"longtemps","longitudinal","aimé","kangourou","homme","maintenant","information",
-				"femmes","prudemment","ouest",
-				"tchèque","case","sinueuse","huitième","neuf","budget","cailloux","dictionnaire",
-				"docteur","creuse","parterre","ambiguité","désengorger","yack","deuxième",
-				"bureautique","cimtière","lime","millier","ville","abeilles","tranquillement"};
- 
 
 
-		for(String i: liste) {
-			System.out.print(i+" : ");
-			string2API(i);
-			System.out.println();
+		String txt ="songe";
+		init();
+
+		// on compare a tous les mot de la liste 
+
+		for(int i=0; i<arrayListMot.size();i++) {
+			int sim = nbsimilarite(string2API(txt),arrayListMot.get(i)[1]);
+			arrayListMot.get(i)[2]=sim+"";
 		}
+
+
+
+
+		//on met la liste dans l'ordre des similarité croisante
+		tri((string2API(txt).length()/2)+1);
+
+		for(int i=0; i<arrayListMot.size();i++) {
+			String motlist = arrayListMot.get(i)[1];
+			arrayListMot.get(i)[2]=nbsimilarite(string2API(txt),motlist)+"";
+			System.out.println(txt+" vs "+arrayListMot.get(i)[0]+"		"+arrayListMot.get(i)[2]);
+		}
+
+		System.out.println("fin");
+		System.out.println("plus petit rang garder : "+arrayListMot.get(0)[2]+"  "+string2API(txt).length());
+	}
+
+	
+	/** Methode de tri de l'arrayliste du plus petit au plus grand en fonction du nb de similarité
+	 * @param r le rang a supprimé
+	 */
+	public static void tri(int r){
+
+		//suppression de toute les similarité à un certain rang  => gain de temp dans le tri.
 		
-		@SuppressWarnings("resource")
-		BufferedReader reader = new BufferedReader(new FileReader(listname));
-		String s;
-		while( (s = reader.readLine()) != null) {
-			String str = new String(s.getBytes(),"UTF-8");
-			System.out.print(str+" : ");
-			string2API(str);
-			System.out.println();
+		for(int i=0; i<arrayListMot.size();i++) {
+			if (Integer.parseInt(arrayListMot.get(i)[2])<r) {
+				arrayListMot.remove(i);
+				i--;
+			}
+		}
+
+		boolean correction = true;
+		while (correction==true)  {
+			correction=false;
+			for(int n=1; n<arrayListMot.size();n++) {
+				if ( Integer.parseInt(arrayListMot.get(n-1)[2]) > Integer.parseInt(arrayListMot.get(n)[2])) {
+					arrayListMot.add(0,arrayListMot.get(n));
+					arrayListMot.remove(n+1);
+					correction = true;
+				}	
+			}
 		}
 	}
 
 
-	// API 
-	public static void string2API(String a) {
+	@SuppressWarnings("resource")
+	public static void init() throws IOException {
+		arrayListMot.clear();
+		BufferedReader reader = new BufferedReader(new FileReader(Filename));
+		String s;
+		while( (s = reader.readLine()) != null) {
+			String[] mot = new String[3]; // mot[0] => mot de la liste; mot[1]=> mot transformé; mot[2]=> similarité
+			String str = new String(s.getBytes(),"UTF-8");
+
+			mot[0]=str;
+			mot[1]=string2API(str);
+			mot[2]="0";	
+			arrayListMot.add(mot);
+		}
+	}
+
+	public static int nbsimilarite(String a,String b) { //compare les API des 2 mot
+		int similarite=0;
+		ArrayList<Character> prisEnCompte = new ArrayList<Character>();
+		prisEnCompte.add(' ');
+
+		for(int aa=0; aa<a.length();aa++) {
+			for(int bb=0; bb<b.length();bb++) {
+				if (a.charAt(aa)==b.charAt(bb)) {
+					//System.out.println(b.charAt(bb)); // sonorité semblable
+					boolean aajouter=true;
+					for(char pec: prisEnCompte) {
+						if (a.charAt(aa)== pec){ 
+							aajouter=false;
+						}
+					}
+					if (aajouter==true){ 
+						prisEnCompte.add(a.charAt(aa));
+						similarite++;
+					}
+				}
+			}
+		}		
+		return similarite;
+	}
+
+
+	// string 2 API 
+	public static String string2API(String a) {
 		String aa = a.toLowerCase();
 		char[] charArray = aa.toCharArray();
+		String word = "";
 
-		System.out.print("[");
 		for (int i=0;i<charArray.length;i++) {
 			String phon=".";
 
@@ -217,7 +291,7 @@ public class Main {
 							break;
 						}
 					}
-					
+
 
 				}
 				if (i+2<charArray.length) {
@@ -564,7 +638,7 @@ public class Main {
 			case 'd':
 				phon="d";
 				break;
-			
+
 			case 'ç':
 				phon="s";
 				break;
@@ -572,18 +646,18 @@ public class Main {
 			case 'â':
 				phon="a";
 				break;	
-				
-			case ' ': case '-':
+
+			case ' ':case '-':
 				phon=" ";
 				break;
 
 			default:
 				phon="*"+charArray[i]+"*";
 			}
+			word += phon;
 
-			System.out.print(phon);
 		}
-		System.out.print("]");
+		return word;
 	}
 
 
@@ -599,6 +673,5 @@ public class Main {
 		}
 		return res;
 	}
-
 
 }
