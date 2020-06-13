@@ -39,7 +39,7 @@ public class Main {
 	}
 
 
-	// API intrenationnal 
+	// API 
 	public static void string2API(String a) {
 		String aa = a.toLowerCase();
 		char[] charArray = aa.toCharArray();
@@ -364,9 +364,11 @@ public class Main {
 					switch (charArray[i]+""+charArray[i+1]) {
 					case "ss":	
 						phon="s";
+						i++;
 						break;
 					case "sh":	
 						phon="ʃ";
+						i++;
 						break;
 					}
 					if (i-1>=0 && type(charArray[i-1]).equals("voyelle") && type(charArray[i+1]).equals("voyelle")) {
@@ -555,20 +557,28 @@ public class Main {
 				phon="e";
 				break;
 
-			case 'è':
+			case 'è':case 'ê':
 				phon="ɛ";
 				break;
 
 			case 'd':
 				phon="d";
 				break;
+			
+			case 'ç':
+				phon="s";
+				break;
 
-			case ' ':
+			case 'â':
+				phon="a";
+				break;	
+				
+			case ' ': case '-':
 				phon=" ";
 				break;
 
 			default:
-				phon="."+charArray[i]+".";
+				phon="*"+charArray[i]+"*";
 			}
 
 			System.out.print(phon);
