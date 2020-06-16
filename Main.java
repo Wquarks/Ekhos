@@ -1,57 +1,140 @@
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+
 /**
  * @author Wquarks
- * @version 4.0
+ * @version 4.2
  */
 
 public class Main {
 
-	private static ArrayList<String[]> arrayListMot = new ArrayList<String[]>();
-
+	private static ArrayList<String[]> arrayListMot = new ArrayList<String[]>(); 
+	private static String fileName="yourFileName.txt";
+	
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 
+		JFrame fenetre = new JFrame("Ekhos");
+		fenetre.setSize(500,400);
+		fenetre.setLocation(500,200);  	
+		fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		String txt ="songe";
+
+
+		JPanel panel = new JPanel();
+
+
+		JTextField textField = new JTextField();
+		textField.setColumns(10);
+
+		panel.add(textField);
+		fenetre.add(panel,BorderLayout.CENTER);
+
+		JButton bouton = new JButton("Chercher");
+		panel.add(bouton);
+
+		JLabel label = new JLabel("Sonorité :");
+
+		panel.add(label);
+
+		DefaultTableModel model = new DefaultTableModel();
+		JTable table = new JTable(model);
+		panel.add(table);
+
+		model.addColumn("Mot");
+		model.addColumn("Sonorité");
+		model.addColumn("Nb de similitude"); 
+
+		//tableau.setRowHeight(20);
+
+		JScrollPane scroll = new JScrollPane(table);
+		scroll.setPreferredSize(new Dimension(400, 300));
+		panel.add(scroll);
+
+
+
+
 		init();
 
 		// on compare a tous les mot de la liste 
 
+		bouton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e)
+			{
+				if(!textField.getText().isEmpty()) {
+					String tf = textField.getText();
+
+					//flush
+					while( model.getRowCount() > 0) {
+						model.removeRow(0);
+					}
+					// mise en place du texte
+
+					search(tf);	
+					for(int y =0;y<arrayListMot.size();y++) {
+						model.addRow(new Object[]{arrayListMot.get(y)[0],arrayListMot.get(y)[1],arrayListMot.get(y)[2]});
+					}
+
+					label.setText("sonorité : "+string2API(tf));
+				}
+			}
+		});	
+
+
+		fenetre.setVisible(true);
+	}
+
+	public static void search(String s){
 		for(int i=0; i<arrayListMot.size();i++) {
-			int sim = nbsimilarite(string2API(txt),arrayListMot.get(i)[1]);
+			int sim = nbsimilarite(string2API(s),arrayListMot.get(i)[1]);
 			arrayListMot.get(i)[2]=sim+"";
 		}
 
-
-
-
 		//on met la liste dans l'ordre des similarité croisante
-		tri((string2API(txt).length()/2)+1);
+		tri();
 
 		for(int i=0; i<arrayListMot.size();i++) {
 			String motlist = arrayListMot.get(i)[1];
-			arrayListMot.get(i)[2]=nbsimilarite(string2API(txt),motlist)+"";
-			System.out.println(txt+" vs "+arrayListMot.get(i)[0]+"		"+arrayListMot.get(i)[2]);
+			arrayListMot.get(i)[2]=nbsimilarite(string2API(s),motlist)+"";
+			System.out.println(s+" vs "+arrayListMot.get(i)[0]+"		"+arrayListMot.get(i)[2]);
 		}
 
-		System.out.println("fin");
-		System.out.println("plus petit rang garder : "+arrayListMot.get(0)[2]+"  "+string2API(txt).length());
+		System.out.println("plus petit rang garder : "+arrayListMot.get(0)[2]+"\nmot choisie:"+string2API(s)+"\nnombre de sonorité dans le mot choisie :"+string2API(s).length());
 	}
 
-	
+
 	/** Methode de tri de l'arrayliste du plus petit au plus grand en fonction du nb de similarité
 	 * @param r le rang a supprimé
 	 */
-	public static void tri(int r){
-
+	public static void tri(){
+		int u=0;
+		//recherche du plus grand rang de similarité
+		for(int i=0; i<arrayListMot.size();i++) {			
+			if (Integer.parseInt(arrayListMot.get(i)[2])>u) {
+				u++;
+			}
+		}
+		if(u<2) { // compansation pour ne pas descendre en dessous de 0
+			u+=2;
+		}
 		//suppression de toute les similarité à un certain rang  => gain de temp dans le tri.
-		
 		for(int i=0; i<arrayListMot.size();i++) {
-			if (Integer.parseInt(arrayListMot.get(i)[2])<r) {
+			if (Integer.parseInt(arrayListMot.get(i)[2])<u-2) {
 				arrayListMot.remove(i);
 				i--;
 			}
@@ -61,20 +144,21 @@ public class Main {
 		while (correction==true)  {
 			correction=false;
 			for(int n=1; n<arrayListMot.size();n++) {
-				if ( Integer.parseInt(arrayListMot.get(n-1)[2]) > Integer.parseInt(arrayListMot.get(n)[2])) {
+				if ( Integer.parseInt(arrayListMot.get(n-1)[2]) < Integer.parseInt(arrayListMot.get(n)[2])) {
 					arrayListMot.add(0,arrayListMot.get(n));
 					arrayListMot.remove(n+1);
 					correction = true;
 				}	
 			}
 		}
+
 	}
 
 
 	@SuppressWarnings("resource")
 	public static void init() throws IOException {
 		arrayListMot.clear();
-		BufferedReader reader = new BufferedReader(new FileReader(Filename));
+		BufferedReader reader = new BufferedReader(new FileReader(fileName));
 		String s;
 		while( (s = reader.readLine()) != null) {
 			String[] mot = new String[3]; // mot[0] => mot de la liste; mot[1]=> mot transformé; mot[2]=> similarité
@@ -124,7 +208,7 @@ public class Main {
 
 			switch (charArray[i]) {
 
-			case 'a':
+			case 'a':case 'à':
 				phon="a";
 				if (i+2<charArray.length) {
 					switch (charArray[i]+""+charArray[i+1]+""+charArray[i+2]) {
@@ -177,7 +261,7 @@ public class Main {
 				}
 				break;
 
-			case 'i': case 'y': case'ï' :
+			case 'i': case 'y': case'ï': case'î' :
 				phon="i";
 
 				if (i+1<charArray.length) {
@@ -218,7 +302,7 @@ public class Main {
 				phon="o";
 				if (i+1<charArray.length) {
 					switch (charArray[i]+""+charArray[i+1]) {
-					case "ou":
+					case "ou":case "où":
 						phon="u";
 						i++;
 						break;
@@ -305,7 +389,7 @@ public class Main {
 				break;
 
 
-			case 'u':
+			case 'u':case 'û':case 'ü':
 				phon="y";
 				if (i+1<charArray.length) {
 					switch (charArray[i]+""+charArray[i+1]) {
@@ -631,7 +715,7 @@ public class Main {
 				phon="e";
 				break;
 
-			case 'è':case 'ê':
+			case 'è':case 'ê':case'ë':
 				phon="ɛ";
 				break;
 
@@ -646,8 +730,11 @@ public class Main {
 			case 'â':
 				phon="a";
 				break;	
+			case '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':case '8':case '9':
+				phon="_";
+				break;	
 
-			case ' ':case '-':
+			case ' ':case '-':case '\'':case '.':case ';':case '!':
 				phon=" ";
 				break;
 
