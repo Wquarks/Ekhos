@@ -25,7 +25,7 @@ public class Main {
 
 	private static ArrayList<String[]> arrayListMot = new ArrayList<String[]>(); 
 	private static String fileName="yourFileName.txt";
-	
+
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 
@@ -58,7 +58,7 @@ public class Main {
 
 		model.addColumn("Mot");
 		model.addColumn("Sonorité");
-		model.addColumn("Nb de similitude"); 
+		model.addColumn("Points de similitude"); 
 
 		//tableau.setRowHeight(20);
 
@@ -66,16 +66,17 @@ public class Main {
 		scroll.setPreferredSize(new Dimension(400, 300));
 		panel.add(scroll);
 
-
-
-
-		init();
-
 		// on compare a tous les mot de la liste 
 
 		bouton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e)
 			{
+				try {
+					init();
+				}catch (IOException e1) {
+					e1.printStackTrace();
+				}
+
 				if(!textField.getText().isEmpty()) {
 					String tf = textField.getText();
 
@@ -114,7 +115,7 @@ public class Main {
 			System.out.println(s+" vs "+arrayListMot.get(i)[0]+"		"+arrayListMot.get(i)[2]);
 		}
 
-		System.out.println("plus petit rang garder : "+arrayListMot.get(0)[2]+"\nmot choisie:"+string2API(s)+"\nnombre de sonorité dans le mot choisie :"+string2API(s).length());
+		System.out.println("plus petit rang garder : "+arrayListMot.get(arrayListMot.size()-1)[2]+"\nmot choisie:"+string2API(s)+"\nnombre de sonorité dans le mot choisie :"+string2API(s).length());
 	}
 
 
@@ -129,12 +130,12 @@ public class Main {
 				u++;
 			}
 		}
-		if(u<2) { // compansation pour ne pas descendre en dessous de 0
-			u+=2;
+		if(u<10) { // compansation pour ne pas descendre en dessous de 0
+			u+=10;
 		}
 		//suppression de toute les similarité à un certain rang  => gain de temp dans le tri.
 		for(int i=0; i<arrayListMot.size();i++) {
-			if (Integer.parseInt(arrayListMot.get(i)[2])<u-2) {
+			if (Integer.parseInt(arrayListMot.get(i)[2])<1) {
 				arrayListMot.remove(i);
 				i--;
 			}
@@ -171,15 +172,23 @@ public class Main {
 		}
 	}
 
+	/**
+	 * @param a le mot à comparer
+	 * @param b les mots de la liste
+	 * @return le point de similarité
+	 */
 	public static int nbsimilarite(String a,String b) { //compare les API des 2 mot
 		int similarite=0;
 		ArrayList<Character> prisEnCompte = new ArrayList<Character>();
 		prisEnCompte.add(' ');
 
-		for(int aa=0; aa<a.length();aa++) {
+		int enchainement=0;
+		for(int aa=0; aa<a.length();aa++) {	
+			int soustour=0;
 			for(int bb=0; bb<b.length();bb++) {
 				if (a.charAt(aa)==b.charAt(bb)) {
-					//System.out.println(b.charAt(bb)); // sonorité semblable
+					soustour++;
+					//System.out.println(a.charAt(aa)+"=="+b.charAt(bb)+"#"+enchainement+soustour+similarite); // sonorité semblable
 					boolean aajouter=true;
 					for(char pec: prisEnCompte) {
 						if (a.charAt(aa)== pec){ 
@@ -190,9 +199,19 @@ public class Main {
 						prisEnCompte.add(a.charAt(aa));
 						similarite++;
 					}
+				}else{
+					//System.out.println(a.charAt(aa)+"!="+b.charAt(bb)+"_"+enchainement+soustour+similarite);
 				}
 			}
+			if(soustour>0) {
+				similarite+=enchainement++;
+			}else {
+				enchainement=0;
+				similarite--;
+			}
+
 		}		
+		similarite-=b.length()-a.length();
 		return similarite;
 	}
 
@@ -328,6 +347,12 @@ public class Main {
 						break;
 					case "ot":
 						phon="ɔt";
+						if (i+1<charArray.length){
+							phon="o";
+						}
+						if (i+2<charArray.length && charArray[i+2]=='e'){
+							phon="ɔt";
+						}
 						i++;
 						break;
 					}
@@ -662,10 +687,7 @@ public class Main {
 				break;
 
 			case 'h':
-				phon="h.";
-				if (charArray[0]=='h') {
-					phon="";
-				}
+				phon="";
 				break;
 
 			case 'z':
@@ -694,7 +716,7 @@ public class Main {
 										break;
 									}
 								}
-								i++;
+								//i++;
 								break;
 							}
 							i++;
