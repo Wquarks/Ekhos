@@ -45,13 +45,13 @@ public class Main {
 	private static JMenuItem copier = new JMenuItem("copier");
 	private static JMenuItem coller = new JMenuItem("coller");
 	private static JMenuItem doc = new JMenuItem("doc");
-	
+
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 
 
 
-		
+
 		fenetre.setJMenuBar(menuBar);
 		fenetre.setSize(500,400);
 		fenetre.setLocation(500,200);  	
@@ -76,7 +76,7 @@ public class Main {
 		menuBar.add(menu1);
 		menuBar.add(menu2);
 		menuBar.add(menu3);
-		
+
 		//tableau.setRowHeight(20);
 
 		JScrollPane scroll = new JScrollPane(table);
@@ -166,16 +166,7 @@ public class Main {
 	 * @param r le rang a supprimé
 	 */
 	public static void tri(){
-		int u=0;
-		//recherche du plus grand rang de similarité
-		for(int i=0; i<arrayListMot.size();i++) {			
-			if (Integer.parseInt(arrayListMot.get(i)[2])>u) {
-				u++;
-			}
-		}
-		if(u<10) { // compansation pour ne pas descendre en dessous de 0
-			u+=10;
-		}
+
 		//suppression de toute les similarité à un certain rang  => gain de temp dans le tri.
 		for(int i=0; i<arrayListMot.size();i++) {
 			if (Integer.parseInt(arrayListMot.get(i)[2])<1) {
@@ -220,15 +211,28 @@ public class Main {
 	 * @param b les mots de la liste
 	 * @return le point de similarité
 	 */
+
 	public static int nbsimilarite(String a,String b) { //compare les API des 2 mot
 		int similarite=0;
 		ArrayList<Character> prisEnCompte = new ArrayList<Character>();
 		prisEnCompte.add(' ');
 
 		int enchainement=0;
-		for(int aa=0; aa<a.length();aa++) {	
+		for(int aa=1; aa<a.length();aa++) {	
 			int soustour=0;
-			for(int bb=0; bb<b.length();bb++) {
+			for(int bb=1; bb<b.length();bb++) {
+				
+				//suite de 2 son
+				if (a.charAt(aa-1)==b.charAt(bb-1) && a.charAt(aa)==b.charAt(bb)){
+					soustour++;
+					//System.out.println(a.charAt(aa-1)+""+a.charAt(aa)+"=="+b.charAt(bb-1)+""+b.charAt(bb)+"#"+enchainement+soustour+similarite); // sonorité semblable
+					similarite+=2;
+
+				}else{
+					//System.out.println(a.charAt(aa-1)+""+a.charAt(aa)+"!="+b.charAt(bb-1)+""+b.charAt(bb)+"_"+enchainement+soustour+similarite);
+				}
+				
+				// son present dans le mot
 				if (a.charAt(aa)==b.charAt(bb)) {
 					soustour++;
 					//System.out.println(a.charAt(aa)+"=="+b.charAt(bb)+"#"+enchainement+soustour+similarite); // sonorité semblable
@@ -242,9 +246,10 @@ public class Main {
 						prisEnCompte.add(a.charAt(aa));
 						similarite++;
 					}
-				}else{
-					//System.out.println(a.charAt(aa)+"!="+b.charAt(bb)+"_"+enchainement+soustour+similarite);
 				}
+				
+				
+				
 			}
 			if(soustour>0) {
 				similarite+=enchainement++;
@@ -257,7 +262,6 @@ public class Main {
 		similarite-=b.length()-a.length();
 		return similarite;
 	}
-
 
 	/**
 	 * @param a mot à translater en API
