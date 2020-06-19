@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +11,9 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -18,7 +22,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  * @author Wquarks
- * @version 4.2
+ * @version 4.5
  */
 
 public class Main {
@@ -26,47 +30,63 @@ public class Main {
 	private static ArrayList<String[]> arrayListMot = new ArrayList<String[]>(); 
 	private static String fileName="yourFileName.txt";
 
+	private static JFrame fenetre = new JFrame("Ekhos");
+	private static JPanel panel = new JPanel();
+	private static JTextField textField = new JTextField();
+	private static JButton bouton = new JButton("Chercher");
+	private static JLabel label = new JLabel("Sonorité :");
+	private static DefaultTableModel model = new DefaultTableModel();
+	private static JTable table = new JTable(model);
+	private static JMenuBar menuBar = new JMenuBar();
+	private static JMenu menu1 = new JMenu("Fichier");
+	private static JMenu menu2 = new JMenu("Edition");
+	private static JMenu menu3 = new JMenu("?");
+	private static JMenuItem save = new JMenuItem("save");
+	private static JMenuItem copier = new JMenuItem("copier");
+	private static JMenuItem coller = new JMenuItem("coller");
+	private static JMenuItem doc = new JMenuItem("doc");
+	
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 
-		JFrame fenetre = new JFrame("Ekhos");
+
+
+		
+		fenetre.setJMenuBar(menuBar);
 		fenetre.setSize(500,400);
 		fenetre.setLocation(500,200);  	
 		fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		fenetre.add(panel,BorderLayout.CENTER);
 
-
-
-		JPanel panel = new JPanel();
-
-
-		JTextField textField = new JTextField();
 		textField.setColumns(10);
 
 		panel.add(textField);
-		fenetre.add(panel,BorderLayout.CENTER);
-
-		JButton bouton = new JButton("Chercher");
 		panel.add(bouton);
-
-		JLabel label = new JLabel("Sonorité :");
-
 		panel.add(label);
-
-		DefaultTableModel model = new DefaultTableModel();
-		JTable table = new JTable(model);
 		panel.add(table);
 
 		model.addColumn("Mot");
 		model.addColumn("Sonorité");
 		model.addColumn("Points de similitude"); 
 
+		menu1.add(save);
+		menu2.add(copier);
+		menu2.add(coller);
+		menu3.add(doc);
+		menuBar.add(menu1);
+		menuBar.add(menu2);
+		menuBar.add(menu3);
+		
 		//tableau.setRowHeight(20);
 
 		JScrollPane scroll = new JScrollPane(table);
-		scroll.setPreferredSize(new Dimension(400, 300));
+		scroll.setPreferredSize(new Dimension(400, 280));
 		panel.add(scroll);
 
-		// on compare a tous les mot de la liste 
+		while ( model.getRowCount()<=15){
+			String[] mot = {"","","0"};
+			model.addRow(mot);
+		}
 
 		bouton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e)
@@ -84,6 +104,7 @@ public class Main {
 					while( model.getRowCount() > 0) {
 						model.removeRow(0);
 					}
+
 					// mise en place du texte
 
 					search(tf);	
@@ -95,9 +116,23 @@ public class Main {
 				}
 			}
 		});	
-
-
+		espacevide();
+		color();
 		fenetre.setVisible(true);
+	}
+
+	public static void color(){
+		Color bc = new Color(52,152,219);
+		panel.setBackground(new Color(139,195,254));
+		textField.setBackground(Color.white);
+		bouton.setBackground(bc);
+		table.setBackground(Color.white);
+		table.getTableHeader().setBackground(bc);
+		menuBar.setBackground(bc);
+		table.getTableHeader().setForeground(Color.WHITE);
+		bouton.setForeground(Color.white);
+
+
 	}
 
 	public static void search(String s){
@@ -106,7 +141,7 @@ public class Main {
 			arrayListMot.get(i)[2]=sim+"";
 		}
 
-		//on met la liste dans l'ordre des similarité croisante
+		//on met la liste dans l'ordre des similarité décroisante
 		tri();
 
 		for(int i=0; i<arrayListMot.size();i++) {
@@ -115,9 +150,17 @@ public class Main {
 			System.out.println(s+" vs "+arrayListMot.get(i)[0]+"		"+arrayListMot.get(i)[2]);
 		}
 
+
 		System.out.println("plus petit rang garder : "+arrayListMot.get(arrayListMot.size()-1)[2]+"\nmot choisie:"+string2API(s)+"\nnombre de sonorité dans le mot choisie :"+string2API(s).length());
+
 	}
 
+	public static void espacevide() {
+		while (arrayListMot.size()<=15){
+			String[] mot = {"","","0"};
+			arrayListMot.add(arrayListMot.size(),mot);
+		}
+	}
 
 	/** Methode de tri de l'arrayliste du plus petit au plus grand en fonction du nb de similarité
 	 * @param r le rang a supprimé
@@ -152,7 +195,7 @@ public class Main {
 				}	
 			}
 		}
-
+		espacevide();
 	}
 
 
@@ -216,7 +259,10 @@ public class Main {
 	}
 
 
-	// string 2 API 
+	/**
+	 * @param a mot à translater en API
+	 * @return mot translater API
+	 */
 	public static String string2API(String a) {
 		String aa = a.toLowerCase();
 		char[] charArray = aa.toCharArray();
@@ -302,9 +348,11 @@ public class Main {
 						}
 						break;
 					case "ie":
-						phon="i";
-						i++;
-						break;
+						if ((i+2<charArray.length) &&(charArray[i+2]!='r')){
+							phon="i";
+							i++;
+							break;
+						}
 					case "iè":
 						phon="jɛ";
 						i++;
@@ -629,14 +677,9 @@ public class Main {
 				break;
 
 			case 'q':
-				phon="q.";
-				if (i+1<charArray.length) {
-					switch (charArray[i]+""+charArray[i+1]) {
-					case "qu":
-						phon="k";
-						i++;
-						break;
-					}
+				phon="k";
+				if (i+1<charArray.length && (charArray[i]+""+charArray[i+1]).equals("qu")) {
+					i++;
 				}
 				break;
 
