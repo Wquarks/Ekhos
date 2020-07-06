@@ -4,7 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class Liste {
+public abstract class Liste {
 
 	protected static String fileName="yourFileName";
 	
@@ -22,7 +22,7 @@ public class Liste {
 			arrayListMot.get(i)[2]=sim+"";
 		}
 
-		//on met la liste dans l'ordre des similaritÈ dÈcroisante
+		//on met la liste dans l'ordre des similarit√© d√©croisante
 		tri();
 
 		for(int i=0; i<arrayListMot.size();i++) {
@@ -33,12 +33,12 @@ public class Liste {
 
 	}
 	
-	/** Methode de tri de l'arrayliste du plus petit au plus grand en fonction du nb de similaritÈ
-	 * @param r le rang a supprimÈ
+	/** Methode de tri de l'arrayliste du plus petit au plus grand en fonction du nb de similarit√©
+	 * @param r le rang a supprim√©
 	 */
 	public static void tri(){
 
-		//suppression de toute les similaritÈ ‡ un certain rang  => gain de temp dans le tri.
+		//suppression de toute les similarit√© √† un certain rang  => gain de temp dans le tri.
 		for(int i=0; i<arrayListMot.size();i++) {
 			if (Integer.parseInt(arrayListMot.get(i)[2])<1) {
 				arrayListMot.remove(i);
@@ -60,9 +60,9 @@ public class Liste {
 	}
 	
 	/**
-	 * @param a le mot ‡ comparer
+	 * @param a le mot √† comparer
 	 * @param b les mots de la liste
-	 * @return le point de similaritÈ
+	 * @return le point de similarit√©
 	 */
 	public static int nbsimilarite(String a,String b) { //compare les API des 2 mot
 		int similarite=0;
@@ -77,7 +77,7 @@ public class Liste {
 				//suite de 2 son
 				if (a.charAt(aa-1)==b.charAt(bb-1) && a.charAt(aa)==b.charAt(bb) ){
 					soustour++;
-					//System.out.println(a.charAt(aa-1)+""+a.charAt(aa)+"=="+b.charAt(bb-1)+""+b.charAt(bb)+"#"+enchainement+soustour+similarite); // sonoritÈ semblable
+					//System.out.println(a.charAt(aa-1)+""+a.charAt(aa)+"=="+b.charAt(bb-1)+""+b.charAt(bb)+"#"+enchainement+soustour+similarite); // sonorit√© semblable
 					similarite+=2;
 
 				}else{
@@ -87,7 +87,7 @@ public class Liste {
 				// son present dans le mot
 				if (a.charAt(aa)==b.charAt(bb)) {
 					soustour++;
-					//System.out.println(a.charAt(aa)+"=="+b.charAt(bb)+"#"+enchainement+soustour+similarite); // sonoritÈ semblable
+					//System.out.println(a.charAt(aa)+"=="+b.charAt(bb)+"#"+enchainement+soustour+similarite); // sonorit√© semblable
 					boolean aajouter=true;
 					for(char pec: prisEnCompte) {
 						if (a.charAt(aa)== pec){ 
@@ -122,7 +122,7 @@ public class Liste {
 		BufferedReader reader = new BufferedReader(new FileReader(fileName));
 		String s;
 		while( (s = reader.readLine()) != null) {
-			String[] mot = new String[3]; // mot[0] => mot de la liste; mot[1]=> mot transformÈ; mot[2]=> similaritÈ
+			String[] mot = new String[3]; // mot[0] => mot de la liste; mot[1]=> mot transform√©; mot[2]=> similarit√©
 			String str = new String(s.getBytes(),"UTF-8");
 
 			mot[0]=str;
