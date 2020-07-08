@@ -1,18 +1,18 @@
 /**
  * @author Wquarks
- * @version 5.3
+ * @version 6.0
  */
 
 public class Main {
-	
+
 	public static void main(String[] args){
-		
+
 		new GUI();
-		
+
 	}
-	
-	
-	
+
+
+
 	/**
 	 * @param a mot à translater en API
 	 * @return mot translater API
