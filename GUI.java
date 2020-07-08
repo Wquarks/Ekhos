@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -17,6 +18,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -30,9 +32,10 @@ public class GUI {
 	private static JPanel panel1 = new JPanel();
 	private static JPanel panel2 = new JPanel();
 	private static JPanel panel3 = new JPanel();
+	private static JPanel panel4 = new JPanel();
 	private static JTextField textField = new JTextField();
 	private static JButton bouton = new JButton("Chercher");
-	private static JLabel label = new JLabel("Sonorité :");
+	private static JLabel label = new JLabel("Sonorité : None");
 	private static DefaultTableModel model = new DefaultTableModel() {
 		private static final long serialVersionUID = 1L;
 		public boolean isCellEditable(int row, int col) {
@@ -49,44 +52,60 @@ public class GUI {
 	private static JMenuItem copier = new JMenuItem("copier");
 	private static JMenuItem coller = new JMenuItem("coller");
 	private static JMenuItem doc = new JMenuItem("Code source");
-
+	private static ButtonGroup bg=new ButtonGroup();  
+	
+	protected static JRadioButton rb0 = new JRadioButton("Mot semblable");
+	protected static JRadioButton rb1 = new JRadioButton("Similarité sonore");
+	
+	
 	private static Color cf = new Color(52,152,219); //couleur foncer
 	private static Color cc = new Color(139,195,254); //couleur claire 
 
 	public GUI() {
 
 		fenetre.setJMenuBar(menuBar);
-		fenetre.setSize(500,402);
+		fenetre.setSize(500,404);
+		fenetre.setMinimumSize(new Dimension(300, 300));
 		fenetre.setLocation(500,200);  	
 		fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		fenetre.add(panel0,BorderLayout.CENTER);
 
 		menuBar.setBorder(null);
 		
-
 		textField.setColumns(10);
 		textField.setMaximumSize(new Dimension(100000000,30));
 		textField.setFocusable(true);
 		textField.addKeyListener(listener);
 		textField.setBorder(new LineBorder(cf,2)) ;
 		
-		label.setBorder(new LineBorder(cc,5));
+		panel1.setBorder(new LineBorder(cc,2));
+		panel2.setBorder(new LineBorder(cc,2));
+		panel3.setBorder(new LineBorder(cc,2));
 
 		panel0.add(panel1);
 		panel0.add(panel2);
 		panel0.add(panel3);
+		panel0.add(panel4);
 		panel0.setBorder(new LineBorder(cc,15)) ;
 		
 		panel0.setLayout(new BoxLayout(panel0, BoxLayout.PAGE_AXIS));
 		panel1.setLayout(new BoxLayout(panel1, BoxLayout.LINE_AXIS));
 		panel2.setLayout(new BoxLayout(panel2, BoxLayout.LINE_AXIS));
 		panel3.setLayout(new BoxLayout(panel3, BoxLayout.LINE_AXIS));
+		panel4.setLayout(new BoxLayout(panel4, BoxLayout.LINE_AXIS));
+		
+		
+		bg.add(rb0);
+		bg.add(rb1);	
+		rb0.setSelected(true);
 		
 		panel1.add(textField);
 		panel1.add(bouton);
 		panel2.setLayout(new BorderLayout());
 		panel2.add(label, BorderLayout.WEST);
-		panel3.add(table);
+		panel3.add(rb0,BorderLayout.WEST);
+		panel3.add(rb1,BorderLayout.EAST);
+		panel4.add(table);
 
 		table.addKeyListener(listener);
 		table.setBorder(null);
@@ -94,6 +113,7 @@ public class GUI {
 		model.addColumn("Mot");
 		model.addColumn("Sonorité");
 		model.addColumn("Points de similitude"); 
+		 
 		
 		menu1.add(save);
 		menu2.add(del);
@@ -108,14 +128,26 @@ public class GUI {
 		//tableau.setRowHeight(20);
 
 		JScrollPane scroll = new JScrollPane(table);
-		scroll.setPreferredSize(new Dimension(400, 280));
 		scroll.setBackground(cc);
 		scroll.setBorder(new LineBorder(cc,0));
 		
-		panel3.add(scroll);
+		panel4.add(scroll);
 
 		bouton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){actionChercher();}
+			public void actionPerformed(ActionEvent e){
+				actionChercher();
+				}
+		});	
+		
+		rb0.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				actionChercher();
+				}
+		});	
+		rb1.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				actionChercher();
+				}
 		});	
 
 
@@ -169,7 +201,12 @@ public class GUI {
 				model.addRow(new Object[]{Liste.arrayListMot.get(y)[0],Liste.arrayListMot.get(y)[1],Liste.arrayListMot.get(y)[2]});
 			}
 			espacevide();
-			label.setText("Sonorité : "+Main.string2API(tf));
+		
+			String word = Main.string2API(tf);
+			if(word.equals("")) {
+				word="None";
+			}
+			label.setText("Sonorité : ["+word+"]");
 		}
 	}
 
@@ -181,6 +218,9 @@ public class GUI {
 		panel1.setBackground(cc);
 		panel2.setBackground(cc);
 		panel3.setBackground(cc);
+		panel4.setBackground(cc);
+		rb0.setBackground(cc);
+		rb1.setBackground(cc);
 		
 		textField.setBackground(Color.white);
 		bouton.setBackground(cf);
@@ -201,7 +241,10 @@ public class GUI {
 		private int Codetouche=0;
 
 		//touche enfoncée
-		public void keyPressed(KeyEvent e) {Codetouche=e.getKeyCode();}
+		public void keyPressed(KeyEvent e) {
+			Codetouche=e.getKeyCode();
+		//System.out.println(e.getKeyCode());
+		}
 
 		//touche relevée
 		public void keyReleased(KeyEvent e) {}
@@ -211,8 +254,8 @@ public class GUI {
 
 			if(Codetouche==10) { 	//10 == entrer
 				actionChercher();
-			}else if(Codetouche==8) {		//8 ==  backspace
-				System.out.println(8);
+			}else if(Codetouche==27) {		//27 ==  echap
+				textField.requestFocus();
 			}else if(Codetouche==127) {		//127 == suppr
 				if (table.isFocusOwner()==true) {
 					actionDel();
