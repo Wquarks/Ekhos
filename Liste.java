@@ -1,14 +1,15 @@
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public abstract class Liste {
 
-	protected static String fileName="yourFileName.txt";
 
+	protected static String fileName="liste_mots.txt";
 	protected static ArrayList<String[]> arrayListMot = new ArrayList<String[]>(); 
+
 
 	public static void addinlist(String txt) throws IOException {
 		FileWriter fw=new FileWriter(fileName, true);    
@@ -139,12 +140,12 @@ public abstract class Liste {
 		int similarite=0;
 		int chance=0;
 		int longueur=0;
-		
+
 		int cal = a.length()-b.length();
 		if (cal!=0){
 			return 0;
 		}
-		
+
 		if(a.length()<b.length()) {
 			longueur=a.length();
 		}else {
@@ -165,10 +166,11 @@ public abstract class Liste {
 	}
 
 
-	@SuppressWarnings("resource")
 	public static void init() throws IOException {
 		arrayListMot.clear();
-		BufferedReader reader = new BufferedReader(new FileReader(fileName));
+
+		BufferedReader reader = new BufferedReader(new InputStreamReader(Liste.class.getResourceAsStream(fileName)));
+		
 		String s;
 		while( (s = reader.readLine()) != null) {
 			String[] mot = new String[3]; // mot[0] => mot de la liste; mot[1]=> mot transformé; mot[2]=> similarité
