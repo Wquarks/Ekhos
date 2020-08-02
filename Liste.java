@@ -1,4 +1,6 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,14 +9,127 @@ import java.util.ArrayList;
 public abstract class Liste {
 
 
-	protected static String fileName="liste_mots.txt";
+
 	protected static ArrayList<String[]> arrayListMot = new ArrayList<String[]>(); 
 
 
 	public static void addinlist(String txt) throws IOException {
-		FileWriter fw=new FileWriter(fileName, true);    
-		fw.write("\n"+txt);    
-		fw.close();
+
+		ArrayList<String> AL = new ArrayList<String>(); 
+
+		BufferedReader reader = new BufferedReader(new FileReader(Main.file.getAbsoluteFile()));
+		String s;
+
+
+		while( (s = reader.readLine()) != null) {
+			AL.add(s);
+		}
+		reader.close();
+
+		boolean present = false;
+		for(String word : AL) {
+			if(word.equalsIgnoreCase(txt)) {
+				present = true;
+				break;
+			}
+		}
+		if(present==false) {
+			AL.add(txt);
+		}
+
+		reWriteListeMot(AL);
+
+	}
+
+	public static void delinlist(String txt) throws IOException {
+
+		ArrayList<String> AL = new ArrayList<String>(); 
+
+		BufferedReader reader = new BufferedReader(new FileReader(Main.file.getAbsoluteFile()));
+		String s;
+
+
+		while( (s = reader.readLine()) != null) {
+			AL.add(s);
+		}
+		reader.close();
+
+		int i =0;
+		for(String word : AL) {
+			if(word.equalsIgnoreCase(txt)) {
+				AL.remove(i);
+				break;
+			}
+			i++;
+		}
+
+
+		reWriteListeMot(AL);
+
+	}
+	public static int nbMots() {
+
+		int nb=0;
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(Main.file.getAbsoluteFile()));
+			while ( in.readLine() != null){
+				nb++;
+			}
+			in.close();
+		} catch (IOException e) {e.printStackTrace();}
+		return nb;
+	}
+
+	public static void start() {
+		if (!Main.file.exists()) {
+			try {
+				Main.file.createNewFile();
+
+				BufferedReader in = new BufferedReader(new InputStreamReader(Liste.class.getResourceAsStream("liste_mots.txt")));
+				String line;
+
+				FileWriter fw = new FileWriter(Main.file.getAbsoluteFile());
+				BufferedWriter bw = new BufferedWriter(fw);
+
+				boolean firstLine=true;
+				while ((line = in.readLine()) != null){
+
+					if(firstLine==false) {
+						bw.write("\n");
+					}else{
+						firstLine=false;
+					}
+					System.out.println (line);
+					bw.write(line);
+
+				}
+				in.close();
+				bw.close();
+
+			} catch (IOException e) {}
+		}
+		GUI.actionChercher();
+	}
+
+
+	public static void reWriteListeMot(ArrayList<String> ALS) throws IOException{
+
+		FileWriter fw = new FileWriter(Main.file);
+		BufferedWriter bw = new BufferedWriter(fw);
+		for(int u = 0;u< ALS.size();u++) {
+			String s = new String(ALS.get(u).getBytes(),"UTF-8");
+
+			if(u!=0) {
+				bw.write("\n");    
+			}
+			bw.write(s);   
+			bw.flush();
+
+			System.out.println(s);
+		}
+
+		bw.close();
+
 	}
 
 	public static void search(String s){
@@ -29,7 +144,6 @@ public abstract class Liste {
 		for(int i=0; i<arrayListMot.size();i++) {
 			String motlist = arrayListMot.get(i)[1];
 			arrayListMot.get(i)[2]=nbsimilarite(Main.string2API(s),motlist)+"";
-			//System.out.println(s+" vs "+arrayListMot.get(i)[0]+"		"+arrayListMot.get(i)[2]);
 		}
 
 	}
@@ -87,11 +201,7 @@ public abstract class Liste {
 			for(int bb=1; bb<b.length();bb++) {				
 				if (a.charAt(aa-1)==b.charAt(bb-1) && a.charAt(aa)==b.charAt(bb) ){
 					soustour++;
-					//System.out.println(a.charAt(aa-1)+""+a.charAt(aa)+"=="+b.charAt(bb-1)+""+b.charAt(bb)+"#"+enchainement+soustour+similarite); // sonorité semblable
 					similarite+=2;
-
-				}else{
-					//System.out.println(a.charAt(aa-1)+""+a.charAt(aa)+"!="+b.charAt(bb-1)+""+b.charAt(bb)+"_"+enchainement+soustour+similarite);
 				}
 			}
 			if(soustour>0) {
@@ -169,8 +279,7 @@ public abstract class Liste {
 	public static void init() throws IOException {
 		arrayListMot.clear();
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(Liste.class.getResourceAsStream(fileName)));
-		
+		BufferedReader reader = new BufferedReader(new FileReader(Main.file.getAbsoluteFile()));
 		String s;
 		while( (s = reader.readLine()) != null) {
 			String[] mot = new String[3]; // mot[0] => mot de la liste; mot[1]=> mot transformé; mot[2]=> similarité
@@ -181,5 +290,6 @@ public abstract class Liste {
 			mot[2]="0";	
 			arrayListMot.add(mot);
 		}
+		reader.close();
 	}
 }
