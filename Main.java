@@ -1,12 +1,16 @@
+import java.io.File;
+
 /**
  * @author Wquarks
- * @version 6.0
+ * @version 8.4
  */
 
 public class Main {
+	protected static double version = 8.4;
+	protected static File file = new File(System.getProperty("user.home")+"\\AppData\\Local\\liste_mots_Ekhos.txt");
 
 	public static void main(String[] args){
-
+		Liste.start();
 		new GUI();
 
 	}
@@ -33,12 +37,12 @@ public class Main {
 					switch (charArray[i]+""+charArray[i+1]+""+charArray[i+2]) {
 					case "aim":
 						if ((i-1>=0)&&(charArray[i-1]=='f')) {
-							phon="ɛ̃";
+							phon="1";
 							i+=2;
 						}
 						break;
 					case "ain":
-						phon="ɛ̃";
+						phon="1";
 						i+=2;
 						break;
 					}
@@ -49,13 +53,13 @@ public class Main {
 						if ((i+2<charArray.length) && type(charArray[i+2]).equals("voyelle")) {
 							phon="a";
 						}else {
-							phon="ɑ̃";
+							phon="@";
 							i++;
 						}
 						break;
 					case "am":
 						if ((i+2<charArray.length) &&(charArray[i+2]=='b' || charArray[i+2]=='p' )) {
-							phon="ɑ̃";
+							phon="@";
 							i++;
 						}else {
 							phon="a";
@@ -89,13 +93,13 @@ public class Main {
 						if ((i+2<charArray.length) && type(charArray[i+2]).equals("voyelle")) {
 							phon="i";
 						}else {
-							phon="ɛ̃";
+							phon="1";
 							i++;
 						}
 						break;
 					case "im":
 						if ((i+2<charArray.length) &&(charArray[i+2]=='b' || charArray[i+2]=='p' )) {
-							phon="ɛ̃";
+							phon="1";
 							i++;
 						}else {
 							phon="i";
@@ -132,12 +136,12 @@ public class Main {
 						i++;
 						break;
 					case "on":
-						phon="ɔ̃";
+						phon="£";
 						i++;
 						break;
 					case "om":
 						if ((i+2<charArray.length) &&(charArray[i+2]=='b' || charArray[i+2]=='p' )) {
-							phon="ɔ̃";
+							phon="£";
 							i++;
 						}else {
 							phon="ɔ";
@@ -152,7 +156,8 @@ public class Main {
 						if (i+1<charArray.length){
 							phon="o";
 						}
-						if (i+2<charArray.length && charArray[i+2]=='e'){
+						
+						if (i+2<charArray.length && charArray[i+2]!='s'){
 							phon="ɔt";
 						}
 						i++;
@@ -173,14 +178,14 @@ public class Main {
 
 						break;
 					case "oin":
-						phon="wɛ̃";
+						phon="w1";
 						break;
 					case "ong":
 						if ((i+3<charArray.length) && type(charArray[i+3]).equals("voyelle")) {
-							phon="ɔ̃";
+							phon="£";
 							i++;
 						}else {
-							phon="ɔ̃";
+							phon="£";
 						}
 						break;
 					case "omm":
@@ -224,14 +229,14 @@ public class Main {
 						if ((i+2<charArray.length) && type(charArray[i+2]).equals("voyelle")) {
 							phon="y";
 						}else {
-							phon="ɛ̃";
+							phon="1";
 							i++;
 						}
 						break;
 					case "um":
 
 						if ((i+2<charArray.length) &&(charArray[i+2]=='b' || charArray[i+2]=='p' )) {
-							phon="ɛ̃";
+							phon="1";
 							i++;
 						}else {
 							phon="y";
@@ -251,7 +256,7 @@ public class Main {
 				}
 				if ((i+5==charArray.length-1)) {
 					if ((charArray[i]+""+charArray[i+1]+""+charArray[i+2]+""+charArray[i+3]+""+charArray[i+4]+""+charArray[i+5]).equals("emment")) {
-						phon="amɑ̃";	
+						phon="am@";	
 						i+=5;
 						break;
 					}
@@ -259,7 +264,7 @@ public class Main {
 				if (i+2<charArray.length) {
 					switch (charArray[i]+""+charArray[i+1]+""+charArray[i+2]) {
 					case "ein":
-						phon="ɛ̃";
+						phon="1";
 						i+=2;
 						break;
 					case "euf":
@@ -284,10 +289,10 @@ public class Main {
 						break;
 					case "emp" :
 						if ((i==charArray.length-4) ||(i==charArray.length-2 && charArray.length-1=='s')) {
-							phon="ɑ̃";
+							phon="@";
 							i+=2;
 						}else {
-							phon="ɑ̃";
+							phon="@";
 							i++;
 						}
 						break;			
@@ -299,7 +304,7 @@ public class Main {
 						if ((i+2<charArray.length) && type(charArray[i+2]).equals("voyelle")) {
 							phon="ə";
 						}else {
-							phon="ɑ̃";
+							phon="@";
 							i++;
 						}
 						break;
@@ -566,7 +571,34 @@ public class Main {
 		return word;
 	}
 
+	public static String patchAPI(String a) {
+		String aa = a.toLowerCase();
+		char[] charArray = aa.toCharArray();
+		String word = "";
 
+		for (int i=0;i<charArray.length;i++) {
+			String phon=".";
+
+			switch (charArray[i]) {
+
+			case '@': 
+				phon="ɑ̃";
+				break;
+			case '1': 
+				phon="ɛ̃";
+				break;
+			case '£': 
+				phon="ɔ̃";
+				break;
+
+			default:
+				phon=charArray[i]+"";
+			}
+			word += phon;
+
+		}
+		return word;
+	}
 	public static String type(char c) {
 		String res="consonne";
 		char[] vliste= {'a','à','e','é','è','y','u','i','î','ï','o'};
